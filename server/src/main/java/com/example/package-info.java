@@ -1,5 +1,5 @@
 /**
-* es el nombre del paquete
+* Esto es package nombre
 */
 
 package com.example;
