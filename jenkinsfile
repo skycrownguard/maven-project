@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+    tools{
+       maven 'localmaven'
+    }
+    stages{
+        
+        stage ('package - Checkout') {
+ 	 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/skycrownguard/maven-project.git']]]) 
+	    }
+        stage('Build'){
+            steps{
+                bat 'mavn clean package'
+            }
+            post{
+                success{
+                    echo 'Estamos haciendo el archive de los artefactos'
+                archiveArtifacts artifacts: '**/*.war'
+                }
+            }
+        }
+        stage('Deploy to staging'){
+            steps{
+               build jobs: 'deploy-to-staging'
+            }
+            post{
+                echo 'Estamos haciendo el archive de los artefactos'
+                archiveArtifacts artifacts: '**/*.war'
+            }
+        }
+    
+}
